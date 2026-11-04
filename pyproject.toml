@@ -1,0 +1,20 @@
+[project]
+name = "leu-watch"
+version = "0.1.0"
+description = "Daily pipeline for BNR exchange rates and Eurostat inflation data"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=3.1.1",
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+# Lets tests import project modules, e.g. `from ingestion.config import ...`.
+pythonpath = ["."]

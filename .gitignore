@@ -1,0 +1,19 @@
+# Secrets: real values live only in .env, never in git
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local tool configuration
+CLAUDE.md
+CLAUDE.local.md
+.claude/
