@@ -98,7 +98,7 @@ written; the choice and its reason go into `docs/decisions.md`.
 
 **Foundation**
 
-- [ ] **PR 1 · Project skeleton:** folder structure, `.gitignore`, `.env.example`, PostgreSQL in
+- [x] **PR 1 · Project skeleton:** folder structure, `.gitignore`, `.env.example`, PostgreSQL in
       Docker Compose, Python dependencies, minimal README.
       *Decision:* how Python dependencies are managed (`pip` + `requirements.txt` or `uv`).
 - [ ] **PR 2 · BNR rates into `raw`:** downloads the history from the yearly archives and loads it
