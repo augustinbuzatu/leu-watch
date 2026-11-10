@@ -31,7 +31,9 @@ Dashboard · Power BI           reads the mart tables
   - current: `https://curs.bnr.ro/nbrfxrates.xml`
   - last 10 banking days: `https://curs.bnr.ro/nbrfxrates10days.xml`
   - yearly archive, from 2005: `https://curs.bnr.ro/files/xml/years/nbrfxrates<YYYY>.xml`
-  - These URLs come from an open-source library's documentation (anafpy); verify them in PR 2.
+  - Verified in PR 2: the yearly archives (2005 onwards) and the current file work on
+    `curs.bnr.ro`. The server often returns an HTML error page with HTTP 200, and the XML
+    namespace changed from `http://` to `https://` in 2026. The 10-day file is verified in PR 8.
 - **Eurostat monthly inflation (HICP) for Romania and the EU:**
   - API: `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/<dataset>?...`
   - JSON-stat response, no authentication.
@@ -41,7 +43,7 @@ Dashboard · Power BI           reads the mart tables
 
 | Layer | Tool | Why | Level 2 |
 | --- | --- | --- | --- |
-| Ingestion | Python (`requests`, `pandas`) | One short script per source, easy to read and test | Retries, structured logging |
+| Ingestion | Python (`requests`, `pandas`) | One short script per source, easy to read and test; simple retries, since the BNR server often fails | Structured logging |
 | Storage | PostgreSQL: Docker locally, Supabase live | Familiar SQL, free, same concepts as a data warehouse | Snowflake / BigQuery |
 | Transformation | dbt Core (`dbt-postgres`) | SQL transformations, run in order, tested and documented | Incremental models, snapshots |
 | Data quality | dbt tests + `pytest` | Catch missing, duplicate or impossible values before the dashboard | Freshness alerts |
@@ -101,7 +103,7 @@ written; the choice and its reason go into `docs/decisions.md`.
 - [x] **PR 1 · Project skeleton:** folder structure, `.gitignore`, `.env.example`, PostgreSQL in
       Docker Compose, Python dependencies, minimal README.
       *Decision:* how Python dependencies are managed (`pip` + `requirements.txt` or `uv`).
-- [ ] **PR 2 · BNR rates into `raw`:** downloads the history from the yearly archives and loads it
+- [x] **PR 2 · BNR rates into `raw`:** downloads the history from the yearly archives and loads it
       with an upsert; running it twice creates no duplicates.
       *Decision:* which currencies to keep and how far back the history goes.
 - [ ] **PR 3 · Tests and CI:** `pytest` tests for the BNR XML parser and a GitHub Actions workflow
