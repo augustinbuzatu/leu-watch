@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Excerpt of https://curs.bnr.ro/files/xml/years/nbrfxrates2007.xml: "-" means no rate that day. -->
+<DataSet xmlns="http://www.bnr.ro/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bnr.ro/xsd nbrfxrates.xsd">
+  <Header>
+    <Publisher>National Bank of Romania</Publisher>
+    <PublishingDate>2011-10-31</PublishingDate>
+    <MessageType>DR</MessageType>
+  </Header>
+  <Body>
+    <Subject>Reference rates</Subject>
+    <OrigCurrency>RON</OrigCurrency>
+    <Cube date="2007-01-03">
+      <Rate currency="BGN">-</Rate>
+      <Rate currency="EUR">3.3560</Rate>
+    </Cube>
+  </Body>
+</DataSet>
