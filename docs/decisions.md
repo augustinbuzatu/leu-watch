@@ -41,3 +41,48 @@ Every architecture or design decision, with the reason behind it. The newest ent
 - **Options considered:** PostgreSQL 16, PostgreSQL 18.
 - **Reason:** Supabase uses PostgreSQL 17 for new projects, so the local database and the live one
   (PR 9) run the same major version.
+
+## 2026-11-10 · PR 2 · Currencies and history
+
+- **Decision:** seven currencies (EUR, USD, GBP and CHF, plus the regional peers HUF, PLN and
+  CZK), with history from 2005, the first year of the BNR XML archive.
+- **Options considered:** currencies: all 37 that BNR publishes (including gold, XAU, and the IMF
+  SDR, XDR), or only EUR and USD; history: from 2015.
+- **Reason:** a focused dataset: the currencies that matter most for Romania and the economies it is
+  usually compared with. All seven are published since 2005, so each has the full history, which
+  covers the 2008 crisis, the pandemic and the 2022 inflation wave and gives the forecast a long
+  series. Trade-off: filtering in ingestion departs from "load unchanged"; adding a currency later
+  means re-running the backfill, which is safe because loads are idempotent.
+
+## 2026-11-10 · PR 2 · Download retries
+
+- **Decision:** a simple retry in the script: up to 5 attempts, waiting 5, 10, 20 and 40 seconds.
+  An attempt succeeds only if the response parses as a BNR document.
+- **Options considered:** no retries (re-run by hand), the `tenacity` library.
+- **Reason:** while testing, 11 of 22 yearly files came back as an HTML error page with HTTP 200.
+  Without retries the backfill would need many manual re-runs and the daily run would fail often.
+  It takes about 10 lines and no new dependency. This brings forward an item the plan had listed as
+  Level 2.
+
+## 2026-11-10 · PR 2 · Column types in raw
+
+- **Decision:** typed columns in `raw.bnr_rates`: `date`, `text`, `numeric` and `integer`.
+- **Options considered:** every column as text, exactly as in the XML, with casts in staging.
+- **Reason:** the conversion is lossless (`numeric` keeps the exact decimals), a malformed value
+  stops the load immediately, and staging stays simpler. Real transformations, such as applying
+  the multiplier, still happen in dbt.
+
+## 2026-11-10 · PR 2 · Loading details
+
+- **Decision:** `psycopg` 3 as the PostgreSQL driver; the upsert updates the rate when a row
+  already exists (`ON CONFLICT ... DO UPDATE`) and records `loaded_at`; `multiplier` stays NULL
+  when the XML has no multiplier attribute.
+- **Options considered:** `psycopg2`; `ON CONFLICT DO NOTHING`; storing 1 when the attribute is
+  missing.
+- **Reason:** `psycopg` 3 is the maintained version (`psycopg2` only gets maintenance fixes). If BNR
+  corrects a published rate, raw takes the correction. NULL keeps raw a faithful copy of the source;
+  how the multiplier is applied is decided in PR 4.
+- **Found while loading:** BNR writes `-` when a currency has no rate on a day (BGN, RUB and SKK in
+  2007, ten currencies in 2009). The parser skips these entries, since they carry no value; any
+  other non-numeric value stops the load. None of the seven chosen currencies has a `-` between
+  2005 and 2026, and each has a rate on every banking day.

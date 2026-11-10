@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Excerpt of https://curs.bnr.ro/files/xml/years/nbrfxrates2025.xml: two days, four currencies. -->
+<DataSet xmlns="http://www.bnr.ro/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bnr.ro/xsd nbrfxrates.xsd">
+  <Header>
+    <Publisher>National Bank of Romania</Publisher>
+    <PublishingDate>2025-12-31</PublishingDate>
+    <MessageType>DR</MessageType>
+  </Header>
+  <Body>
+    <Subject>Reference rates</Subject>
+    <OrigCurrency>RON</OrigCurrency>
+    <Cube date="2025-01-03">
+      <Rate currency="EUR">4.9749</Rate>
+      <Rate currency="HUF" multiplier="100">1.1992</Rate>
+      <Rate currency="USD">4.8373</Rate>
+      <Rate currency="XAU">412.9649</Rate>
+    </Cube>
+    <Cube date="2025-01-08">
+      <Rate currency="EUR">4.9738</Rate>
+      <Rate currency="HUF" multiplier="100">1.1994</Rate>
+      <Rate currency="USD">4.8217</Rate>
+      <Rate currency="XAU">411.4200</Rate>
+    </Cube>
+  </Body>
+</DataSet>

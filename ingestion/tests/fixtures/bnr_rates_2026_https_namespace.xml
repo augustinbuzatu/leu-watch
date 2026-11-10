@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Excerpt of https://curs.bnr.ro/files/xml/years/nbrfxrates2026.xml: the namespace is https:// from 2026. -->
+<DataSet xmlns="https://www.bnr.ro/xsd" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://curs.bnr.ro/xsd/nbrfxrates.xsd">
+  <Header>
+    <Publisher>National Bank of Romania</Publisher>
+    <PublishingDate>2026-11-10</PublishingDate>
+    <MessageType>DR</MessageType>
+  </Header>
+  <Body>
+    <Subject>Reference rates</Subject>
+    <OrigCurrency>RON</OrigCurrency>
+    <Cube date="2026-01-05">
+      <Rate currency="EUR">5.0905</Rate>
+      <Rate currency="HUF" multiplier="100">1.3247</Rate>
+    </Cube>
+  </Body>
+</DataSet>

@@ -25,6 +25,20 @@ uv run pytest             # runs the tests
 Stop the database with `docker compose down`. The data is kept in a Docker volume;
 `docker compose down -v` deletes it.
 
+The tests in `ingestion/tests/test_load.py` use the local database and are skipped when it is not
+running.
+
+## Loading the data
+
+```bash
+uv run python -m ingestion.backfill_bnr                                # BNR rates, 2005 to today
+uv run python -m ingestion.backfill_bnr --from-year 2024 --to-year 2024 # one year only
+```
+
+The backfill downloads the BNR yearly archives and upserts them into `raw.bnr_rates`, so it can be
+re-run safely. The BNR server often answers with an error page, so each download is retried up to
+5 times.
+
 ## Repository structure
 
 ```text
