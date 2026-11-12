@@ -14,8 +14,16 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "ruff>=0.17.4",
 ]
 
 [tool.pytest.ini_options]
 # Lets tests import project modules, e.g. `from ingestion.config import ...`.
 pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# Default rules (pyflakes and pycodestyle errors) plus import sorting.
+extend-select = ["I"]
