@@ -86,3 +86,32 @@ Every architecture or design decision, with the reason behind it. The newest ent
   2007, ten currencies in 2009). The parser skips these entries, since they carry no value; any
   other non-numeric value stops the load. None of the seven chosen currencies has a `-` between
   2005 and 2026, and each has a rate on every banking day.
+
+## 2026-11-12 · PR 3 · CI checks
+
+- **Decision:** CI runs the tests plus Ruff (linting and a formatting check) on every pull request
+  and on every push to `main`.
+- **Options considered:** tests only; tests, Ruff and type checking with mypy.
+- **Reason:** Ruff is one fast tool that replaces flake8, black and isort and keeps the style
+  consistent at almost no cost: the existing code passed the linter and needed one formatting
+  change. Type checking adds configuration and false alarms that a codebase this small doesn't
+  justify yet; it stays Level 2.
+
+## 2026-11-12 · PR 3 · Database tests in CI
+
+- **Decision:** CI starts a PostgreSQL 17 service container, so the integration tests run on every
+  pull request. In CI (`CI=true`) a missing database fails these tests instead of skipping them.
+- **Options considered:** let the integration tests skip in CI.
+- **Reason:** "loading twice creates no duplicates" is the main guarantee of the ingestion, so it
+  must be checked automatically. A skipped test would let a broken database setup show as green.
+  The container's password is a throwaway value for a database that exists only during the job.
+
+## 2026-11-12 · PR 3 · CI details
+
+- **Decision:** `uv sync --locked`, so CI fails if `uv.lock` is out of date; GitHub Actions pinned
+  to a commit SHA with the version in a comment (`actions/checkout` v7.0.1, `astral-sh/setup-uv`
+  v10.3.3); Ruff with a line length of 100 and import sorting on top of the default rules.
+- **Options considered:** `uv sync` without `--locked`; version tags such as `@v7`.
+- **Reason:** a tag can be moved by whoever controls the action's repository (as in the 2025
+  `tj-actions/changed-files` attack); a commit SHA cannot. `setup-uv` no longer publishes major
+  tags, so it needs an exact version anyway. Automatic updates of the pins (Dependabot) stay Level 2.
