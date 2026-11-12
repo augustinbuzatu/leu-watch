@@ -106,8 +106,8 @@ written; the choice and its reason go into `docs/decisions.md`.
 - [x] **PR 2 · BNR rates into `raw`:** downloads the history from the yearly archives and loads it
       with an upsert; running it twice creates no duplicates.
       *Decision:* which currencies to keep and how far back the history goes.
-- [ ] **PR 3 · Tests and CI:** `pytest` tests for the BNR XML parser and a GitHub Actions workflow
-      that runs them on every pull request.
+- [x] **PR 3 · Tests and CI:** `pytest` tests for the BNR XML parser and a GitHub Actions workflow
+      that runs them on every pull request. (The parser tests were written with the parser, in PR 2.)
       *Decision:* what CI checks (tests only, or formatting and linting too).
 
 **Transformations**

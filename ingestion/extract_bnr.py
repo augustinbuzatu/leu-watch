@@ -117,7 +117,9 @@ def fetch_rates(url: str) -> list[BnrRate]:
         except (requests.RequestException, InvalidBnrResponse) as error:
             if attempt == MAX_ATTEMPTS:
                 raise
-            print(f"Attempt {attempt}/{MAX_ATTEMPTS} failed for {url}: {error}. "
-                  f"Retrying in {delay} s.")
+            print(
+                f"Attempt {attempt}/{MAX_ATTEMPTS} failed for {url}: {error}. "
+                f"Retrying in {delay} s."
+            )
             time.sleep(delay)
             delay *= 2

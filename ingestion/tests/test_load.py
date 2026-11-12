@@ -1,9 +1,11 @@
 """Integration tests against the local PostgreSQL (docker compose up -d).
 
-They are skipped when the database is not running. Every test runs inside a
-transaction that is rolled back, so nothing is left in the database.
+Locally they are skipped when the database is not running. In CI they fail
+instead, so a broken database setup cannot pass as green. Every test runs inside
+a transaction that is rolled back, so nothing is left in the database.
 """
 
+import os
 from datetime import date
 from decimal import Decimal
 
@@ -26,6 +28,8 @@ def conn():
     try:
         connection = connect(load_database_settings())
     except (RuntimeError, psycopg.OperationalError) as error:
+        if os.environ.get("CI"):  # set to "true" by GitHub Actions
+            raise
         pytest.skip(f"PostgreSQL is not available: {error}")
     create_bnr_rates_table(connection)
     yield connection

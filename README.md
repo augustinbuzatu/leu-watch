@@ -1,5 +1,7 @@
 # Leu Watch
 
+[![CI](https://github.com/augustinbuzatu/leu-watch/actions/workflows/ci.yml/badge.svg)](https://github.com/augustinbuzatu/leu-watch/actions/workflows/ci.yml)
+
 A daily data pipeline that tracks the Romanian leu (RON). It loads National Bank of Romania (BNR)
 exchange rates and Eurostat inflation data into PostgreSQL, models them with dbt and serves a
 Power BI dashboard with a simple inflation forecast.
@@ -20,6 +22,8 @@ cp .env.example .env      # then set your own POSTGRES_PASSWORD
 docker compose up -d      # starts PostgreSQL 17 on localhost:5432
 uv sync                   # creates .venv and installs the dependencies
 uv run pytest             # runs the tests
+uv run ruff check .       # linting
+uv run ruff format .      # formats the code
 ```
 
 Stop the database with `docker compose down`. The data is kept in a Docker volume;
@@ -27,6 +31,9 @@ Stop the database with `docker compose down`. The data is kept in a Docker volum
 
 The tests in `ingestion/tests/test_load.py` use the local database and are skipped when it is not
 running.
+
+CI (`.github/workflows/ci.yml`) runs the linter, the formatting check and all tests, including the
+database tests against a temporary PostgreSQL, on every pull request and every push to `main`.
 
 ## Loading the data
 
@@ -47,7 +54,7 @@ dbt/                  dbt project: staging and marts models (from PR 4)
 forecasting/          inflation forecast (from PR 11)
 dashboard/            Power BI report and screenshots (from PR 10)
 docs/                 project plan and decision log
-.github/workflows/    CI and the daily pipeline (from PR 3)
+.github/workflows/    CI (ci.yml); the daily pipeline comes in PR 9
 docker-compose.yml    local PostgreSQL
 .env.example          required environment variables, without real values
 ```
