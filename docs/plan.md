@@ -81,7 +81,7 @@ leu-watch/
 ├── ingestion/            # Python: extract_bnr.py, extract_eurostat.py, load.py, tests/
 ├── dbt/
 │   └── models/
-│       ├── staging/      # stg_bnr_rates.sql, stg_eurostat_hicp.sql
+│       ├── staging/      # bnr/stg_bnr__rates.sql, eurostat/stg_eurostat__hicp.sql
 │       └── marts/        # fct_..., dim_... + .yml files with tests and descriptions
 ├── forecasting/          # forecast.py: baseline + model, writes predictions to the database
 ├── dashboard/            # report.pbix + screenshots/
@@ -112,12 +112,12 @@ written; the choice and its reason go into `docs/decisions.md`.
 
 **Transformations**
 
-- [ ] **PR 4 · dbt and BNR staging:** dbt setup and the `stg_bnr_rates` model with tests.
+- [x] **PR 4 · dbt and BNR staging:** dbt setup and the `stg_bnr__rates` model with tests.
       *Decision:* how to handle currencies quoted per 100 units (the XML `multiplier` attribute,
       to be verified) and the naming conventions.
 - [ ] **PR 5 · Eurostat inflation into `raw`:** the Eurostat API script, with tests.
       *Decision:* which countries to compare with Romania (EU average, neighbours) and from which year.
-- [ ] **PR 6 · Eurostat staging:** the `stg_eurostat_hicp` model, with periods like `2024M01`
+- [ ] **PR 6 · Eurostat staging:** the `stg_eurostat__hicp` model, with periods like `2024M01`
       converted to dates.
       *Decision:* how months are represented (first day of the month or a year-month key).
 - [ ] **PR 7 · Marts (star schema):** dimensions (calendar, currency, country) and fact tables

@@ -33,7 +33,8 @@ The tests in `ingestion/tests/test_load.py` use the local database and are skipp
 running.
 
 CI (`.github/workflows/ci.yml`) runs the linter, the formatting check and all tests, including the
-database tests against a temporary PostgreSQL, on every pull request and every push to `main`.
+database tests against a temporary PostgreSQL, then `dbt build` on empty raw tables, on every pull
+request and every push to `main`.
 
 ## Loading the data
 
@@ -46,11 +47,23 @@ The backfill downloads the BNR yearly archives and upserts them into `raw.bnr_ra
 re-run safely. The BNR server often answers with an error page, so each download is retried up to
 5 times.
 
+## Transforming the data (dbt)
+
+```bash
+cd dbt
+uv run --env-file ../.env dbt build      # builds the models and runs every dbt test
+```
+
+dbt reads the connection from the same `POSTGRES_*` variables (`dbt/profiles.yml` holds no values).
+`dbt build` creates the views in the `staging` schema and stops at the first failing test.
+Currently it builds `staging.stg_bnr__rates`: one row per banking day and currency, in lei for
+1 unit of the currency (BNR quotes HUF per 100 units).
+
 ## Repository structure
 
 ```text
 ingestion/            Python scripts that download the source data and load it into raw
-dbt/                  dbt project: staging and marts models (from PR 4)
+dbt/                  dbt project: staging models (marts from PR 7) and their tests
 forecasting/          inflation forecast (from PR 11)
 dashboard/            Power BI report and screenshots (from PR 10)
 docs/                 project plan and decision log
