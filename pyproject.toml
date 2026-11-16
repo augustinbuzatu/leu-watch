@@ -5,6 +5,8 @@ description = "Daily pipeline for BNR exchange rates and Eurostat inflation data
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dbt-core>=1.12.7",
+    "dbt-postgres>=1.11.0",
     "pandas>=3.1.1",
     "psycopg[binary]>=3.3.8",
     "python-dotenv>=1.2.4",
