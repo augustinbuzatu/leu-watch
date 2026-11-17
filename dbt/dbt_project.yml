@@ -1,0 +1,17 @@
+name: leu_watch
+version: "1.0.0"
+profile: leu_watch
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+flags:
+  send_anonymous_usage_stats: false
+
+models:
+  leu_watch:
+    # Light cleaning only (renaming, unit conversion), so views: always current, no storage.
+    staging:
+      +schema: staging
+      +materialized: view

@@ -7,6 +7,12 @@ __pycache__/
 .venv/
 .pytest_cache/
 
+# dbt: compiled SQL, logs and installed packages are generated
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
 # Editors and operating systems
 .vscode/
 .idea/

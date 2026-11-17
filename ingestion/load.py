@@ -2,11 +2,15 @@
 
 Loads are idempotent: rows are upserted on their natural key, so running the
 same load twice leaves the table unchanged instead of creating duplicates.
+
+Run as a module to create the raw tables without loading data (CI does this
+before dbt runs):
+    uv run python -m ingestion.load
 """
 
 import psycopg
 
-from ingestion.config import DatabaseSettings
+from ingestion.config import DatabaseSettings, load_database_settings
 from ingestion.extract_bnr import BnrRate
 
 CREATE_RAW_SCHEMA_SQL = "CREATE SCHEMA IF NOT EXISTS raw"
@@ -55,3 +59,9 @@ def upsert_bnr_rates(conn: psycopg.Connection, rates: list[BnrRate]) -> None:
             UPSERT_BNR_RATE_SQL,
             [(r.rate_date, r.currency, r.rate, r.multiplier) for r in rates],
         )
+
+
+if __name__ == "__main__":
+    with connect(load_database_settings()) as conn:  # commits when the block ends
+        create_bnr_rates_table(conn)
+    print("Raw tables are ready.")

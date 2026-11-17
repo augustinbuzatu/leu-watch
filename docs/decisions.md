@@ -115,3 +115,53 @@ Every architecture or design decision, with the reason behind it. The newest ent
 - **Reason:** a tag can be moved by whoever controls the action's repository (as in the 2025
   `tj-actions/changed-files` attack); a commit SHA cannot. `setup-uv` no longer publishes major
   tags, so it needs an exact version anyway. Automatic updates of the pins (Dependabot) stay Level 2.
+
+## 2026-11-16 · PR 4 · Currencies quoted per 100 units
+
+- **Decision:** staging converts every rate to lei for 1 unit: `rate_ron = rate / coalesce(multiplier,
+  1)`, stored as `numeric(18, 6)`.
+- **Options considered:** keep the published quote with a `quote_units` column and divide downstream;
+  keep both the converted and the published values.
+- **Reason:** checked in raw: only HUF has a multiplier (100, on all 5,517 days). One rule applied
+  once, in the layer meant for it, gives every currency the same unit, so no later calculation
+  needs a special case; the original quote stays in raw. BNR publishes at most 4 decimals, so
+  dividing by 100 needs 6: `numeric(18, 6)` keeps every value exact. A source test fails the
+  build if BNR ever uses another multiplier, since 6 decimals would then not be enough. Showing
+  HUF "per 100" is left to the dashboard.
+
+## 2026-11-16 · PR 4 · Naming conventions
+
+- **Decision:** the dbt Labs style guide: `stg_<source>__<entity>` (`stg_bnr__rates`), `fct_` and
+  `dim_` prefixes in marts, one folder per source with `_<source>__sources.yml` and
+  `_<source>__models.yml`; snake_case columns, dates ending in `_date`, amounts carrying their unit
+  (`rate_ron`), `currency_code` for ISO codes.
+- **Options considered:** single underscores as first written in the plan (`stg_bnr_rates`), one
+  `schema.yml` per folder.
+- **Reason:** the documented industry convention, recognisable to anyone who works with dbt; the
+  double underscore separates the source from the entity. The plan's model names were updated.
+
+## 2026-11-16 · PR 4 · Tests for uniqueness and positive rates
+
+- **Decision:** two singular tests (SQL files in `dbt/tests/`) for "one row per day and currency"
+  and "rates are positive"; dbt's built-in tests for the rest.
+- **Options considered:** the `dbt_utils` package (`unique_combination_of_columns`,
+  `expression_is_true`).
+- **Reason:** no extra dependency or `dbt deps` step, and plain SQL that is easy to read: a test
+  returns the rows that break the rule and passes when there are none. `dbt_utils` can be added
+  later if the marts need it.
+
+## 2026-11-16 · PR 4 · dbt setup details
+
+- **Decision:** dbt Core 1.12 with dbt-postgres 1.11 as main dependencies; models built in schemas
+  named exactly after the layers (`staging`, later `marts`) through a `generate_schema_name`
+  override; staging models materialised as views; `dbt/profiles.yml` committed with `env_var()`
+  references only, run with `uv run --env-file ../.env`; a dbt unit test for the unit conversion;
+  CI creates the empty raw tables and runs `dbt build`; dbt's anonymous usage statistics disabled.
+- **Options considered:** dbt as a dev dependency; dbt's default schema names (`public_staging`);
+  staging as tables; a `profiles.yml` outside the repository.
+- **Reason:** dbt runs in the daily pipeline, not only in development. Schema names that match the
+  architecture are easier to explain and query. Views are always current and the staging logic is
+  light. A committed profile without values works the same locally and in Actions. The unit test
+  checks the conversion logic on fixed input; data tests check the real data. In CI the raw tables
+  are empty, so `dbt build` checks that the SQL runs on PostgreSQL and that the unit test passes.
+  `dbt-postgres` brings its own driver (`psycopg2`), separate from the ingestion's `psycopg` 3.

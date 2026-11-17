@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: bnr
+    description: >
+      Reference exchange rates of the National Bank of Romania (BNR), loaded unchanged by
+      ingestion/backfill_bnr.py.
+    schema: raw
+    tables:
+      - name: bnr_rates
+        description: One row per banking day and currency, exactly as published by BNR.
+        columns:
+          - name: rate_date
+            description: Banking day the rate applies to.
+          - name: currency
+            description: ISO 4217 currency code.
+          - name: rate
+            description: Lei for `multiplier` units of the currency, or for 1 unit when it is NULL.
+          - name: multiplier
+            description: Number of currency units the rate is quoted for (100 for HUF), NULL for 1.
+            data_tests:
+              # stg_bnr__rates keeps 6 decimals, exact only for multipliers up to 100.
+              - accepted_values:
+                  arguments:
+                    values: [100]
+                    quote: false
+          - name: loaded_at
+            description: When the row was last written by the ingestion.

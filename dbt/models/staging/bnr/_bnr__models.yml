@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_bnr__rates
+    description: BNR reference rates, one row per banking day and currency, in lei for 1 unit.
+    columns:
+      - name: rate_date
+        description: Banking day the rate applies to.
+        data_tests:
+          - not_null
+      - name: currency_code
+        description: ISO 4217 currency code.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["EUR", "USD", "GBP", "CHF", "HUF", "PLN", "CZK"]
+      - name: rate_ron
+        description: Lei for 1 unit of the currency (HUF converted from the per-100 quote).
+        data_tests:
+          - not_null
+      - name: loaded_at
+        description: When the row was last written by the ingestion.
+
+unit_tests:
+  - name: test_stg_bnr__rates_converts_rates_to_one_unit
+    description: HUF is quoted per 100 units and must be divided by 100; EUR stays as published.
+    model: stg_bnr__rates
+    given:
+      - input: source('bnr', 'bnr_rates')
+        rows:
+          - {rate_date: "2026-11-10", currency: HUF, rate: 1.4736, multiplier: 100}
+          - {rate_date: "2026-11-10", currency: EUR, rate: 5.3443, multiplier: null}
+    expect:
+      rows:
+        - {rate_date: "2026-11-10", currency_code: HUF, rate_ron: 0.014736}
+        - {rate_date: "2026-11-10", currency_code: EUR, rate_ron: 5.3443}
